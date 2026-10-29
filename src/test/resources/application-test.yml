@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:los;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+
+resilience4j:
+  retry:
+    instances:
+      creditBureau:
+        wait-duration: 1ms
+
+los:
+  bureau:
+    stub:
+      latency: 0ms

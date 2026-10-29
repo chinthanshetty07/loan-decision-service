@@ -1,0 +1,81 @@
+spring:
+  application:
+    name: loan-decision-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/los}
+    username: ${DB_USER:los}
+    password: ${DB_PASSWORD:los}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,circuitbreakers
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    circuitbreakers:
+      enabled: true
+
+resilience4j:
+  retry:
+    instances:
+      creditBureau:
+        max-attempts: 3
+        wait-duration: 200ms
+        retry-exceptions:
+          - com.chinthanshetty.los.integration.BureauUnavailableException
+  circuitbreaker:
+    instances:
+      creditBureau:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 2
+        record-exceptions:
+          - com.chinthanshetty.los.integration.BureauUnavailableException
+
+los:
+  security:
+    # HS256 signing key, at least 32 bytes. Override with JWT_SECRET outside local demos.
+    jwt-secret: ${JWT_SECRET:local-demo-secret-change-me-0123456789abcdef}
+    token-ttl: 1h
+    users:
+      - username: officer
+        password: officer123
+        institution: DEMO_BANK
+        roles: [OFFICER]
+      - username: risk
+        password: risk123
+        institution: DEMO_BANK
+        roles: [OFFICER, RISK_ADMIN]
+      - username: coop-officer
+        password: coop123
+        institution: COOP_BANK
+        roles: [OFFICER]
+  bureau:
+    stub:
+      latency: 80ms
+  sanctions:
+    # Comma-separated; @Value splits it into a list.
+    watchlist: RAVI SHELLWALA,GLOBAL TRADING FZE
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
