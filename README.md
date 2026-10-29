@@ -1,5 +1,7 @@
 # Loan Decision Service
 
+[![CI](https://github.com/chinthanshetty07/loan-decision-service/actions/workflows/ci.yml/badge.svg)](https://github.com/chinthanshetty07/loan-decision-service/actions/workflows/ci.yml)
+
 A Spring Boot microservice that takes a loan application, screens it, pulls a credit score, and returns an
 explainable decision: **APPROVED**, **REJECTED** or **REFERRED** for a human underwriter.
 
